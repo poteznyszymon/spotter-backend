@@ -1,6 +1,7 @@
 package com.example.spotter.service;
 
-import com.example.spotter.dto.auth.CreateUserDTO;
+import com.example.spotter.dto.auth.LoginUserDTO;
+import com.example.spotter.dto.auth.RegisterUserDTO;
 import com.example.spotter.model.UserEntity;
 import com.example.spotter.repository.UserRepository;
 import jakarta.servlet.http.Cookie;
@@ -25,6 +26,8 @@ public class AuthService {
     private final HttpServletResponse response;
     private final PasswordEncoder passwordEncoder;
 
+    private final int cookieMaxAge =  24 * 60 * 60; // 1 day
+
     public AuthService(
             UserRepository userRepository,
             JwtService jwtService,
@@ -37,11 +40,15 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public String login() {
-        return "login";
+    public UserEntity login(LoginUserDTO dto) {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        UserEntity user = (UserEntity) authentication.getPrincipal();
+        setTokenToCookie(jwtService.generateToken(user));
+        return user;
     }
 
-    public UserEntity register(CreateUserDTO dto) {
+    public UserEntity register(RegisterUserDTO dto) {
 
         if (userRepository.existsUserEntityByEmail(dto.getEmail())) {
             throw new RuntimeException("email already taken");
@@ -61,23 +68,28 @@ public class AuthService {
 
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String token = jwtService.generateToken(savedUser);
-        Cookie cookie = new Cookie(accessTokenName, token);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        cookie.setMaxAge(24 * 60 * 60); // 1 day
-
-        response.addCookie(cookie);
+        setTokenToCookie(jwtService.generateToken(savedUser));
         return savedUser;
     }
 
-    public String logout() {
-        return "logout";
+    public void logout() {
+        clearTokenCookie();
     }
 
-    public String getAuthenticatedUser() {
-        return "user";
+    private void setTokenToCookie(String token) {
+        Cookie cookie = new Cookie(accessTokenName, token);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(cookieMaxAge);
+        response.addCookie(cookie);
+    }
+
+    private void clearTokenCookie() {
+        Cookie cookie = new Cookie(accessTokenName, "");
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
     }
 
 }

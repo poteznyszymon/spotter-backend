@@ -4,8 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-public class CreateUserDTO {
+public class RegisterUserDTO {
 
     private String email;
     private String firstName;
