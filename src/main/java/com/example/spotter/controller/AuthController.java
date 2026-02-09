@@ -1,9 +1,12 @@
 package com.example.spotter.controller;
 
+import com.example.spotter.dto.UserDTO;
+import com.example.spotter.dto.auth.AuthResponseDTO;
 import com.example.spotter.dto.auth.LoginUserDTO;
 import com.example.spotter.dto.auth.RegisterUserDTO;
 import com.example.spotter.model.UserEntity;
 import com.example.spotter.service.AuthService;
+import com.example.spotter.utils.enums.ModelConverter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -14,18 +17,20 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final ModelConverter modelConverter;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, ModelConverter modelConverter) {
         this.authService = authService;
+        this.modelConverter = modelConverter;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserEntity> login(@RequestBody LoginUserDTO dto) {
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginUserDTO dto) {
         return ResponseEntity.ok(this.authService.login(dto));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserEntity> register(@RequestBody RegisterUserDTO dto) {
+    public ResponseEntity<AuthResponseDTO> register(@RequestBody RegisterUserDTO dto) {
         return ResponseEntity.ok(this.authService.register(dto));
     }
 
@@ -36,7 +41,7 @@ public class AuthController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<UserEntity> returnAuthenticatedUser(@AuthenticationPrincipal UserEntity user) {
-        return ResponseEntity.ok(user);
+    public ResponseEntity<UserDTO> returnAuthenticatedUser(@AuthenticationPrincipal UserEntity user) {
+        return ResponseEntity.ok(modelConverter.convert(user, UserDTO.class));
     }
 }

@@ -1,5 +1,6 @@
 package com.example.spotter.service;
 
+import com.example.spotter.dto.auth.AuthResponseDTO;
 import com.example.spotter.dto.auth.LoginUserDTO;
 import com.example.spotter.dto.auth.RegisterUserDTO;
 import com.example.spotter.model.UserEntity;
@@ -40,15 +41,16 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public UserEntity login(LoginUserDTO dto) {
+    public AuthResponseDTO login(LoginUserDTO dto) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserEntity user = (UserEntity) authentication.getPrincipal();
-        setTokenToCookie(jwtService.generateToken(user));
-        return user;
+        String token = jwtService.generateToken(user);
+        setTokenToCookie(token);
+        return new AuthResponseDTO(token, jwtService.getExpirationTime());
     }
 
-    public UserEntity register(RegisterUserDTO dto) {
+    public AuthResponseDTO register(RegisterUserDTO dto) {
 
         if (userRepository.existsUserEntityByEmail(dto.getEmail())) {
             throw new RuntimeException("email already taken");
@@ -68,8 +70,9 @@ public class AuthService {
 
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        setTokenToCookie(jwtService.generateToken(savedUser));
-        return savedUser;
+        String token = jwtService.generateToken(savedUser);
+        setTokenToCookie(token);
+        return new AuthResponseDTO(token, jwtService.getExpirationTime());
     }
 
     public void logout() {
