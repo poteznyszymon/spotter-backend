@@ -3,6 +3,7 @@ package com.example.spotter.service;
 import com.example.spotter.dto.auth.AuthResponseDTO;
 import com.example.spotter.dto.auth.LoginUserDTO;
 import com.example.spotter.dto.auth.RegisterUserDTO;
+import com.example.spotter.exception.exceptions.UserAlreadyExistsException;
 import com.example.spotter.model.UserEntity;
 import com.example.spotter.repository.UserRepository;
 import jakarta.servlet.http.Cookie;
@@ -53,11 +54,11 @@ public class AuthService {
     public AuthResponseDTO register(RegisterUserDTO dto) {
 
         if (userRepository.existsUserEntityByEmail(dto.getEmail())) {
-            throw new RuntimeException("email already taken");
+            throw new UserAlreadyExistsException("Email already taken");
         }
 
         if (userRepository.existsUserEntityByUsername(dto.getUsername())) {
-            throw new RuntimeException("username already taken");
+            throw new UserAlreadyExistsException("Username already taken");
         }
 
         UserEntity user = new UserEntity();
