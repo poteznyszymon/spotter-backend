@@ -13,7 +13,7 @@ public class S3ConnectionTester implements CommandLineRunner {
 
     private final S3Client s3Client;
 
-    @Value("${s3.bucket}")
+    @Value("${app.avatars-bucket-name}")
     private String bucketName;
 
     public S3ConnectionTester(S3Client s3Client) {
