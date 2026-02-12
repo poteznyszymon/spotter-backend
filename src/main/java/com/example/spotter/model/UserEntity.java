@@ -42,6 +42,10 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false)
     private Role role = Role.EMPLOYEE;
 
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "avatar_id")
+    AttachmentEntity avatar;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
