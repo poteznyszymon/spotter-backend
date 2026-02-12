@@ -1,26 +1,31 @@
-version: '3.8'
-
 services:
   postgres_database:
     image: postgres:16-alpine
     restart: always
     environment:
-      POSTGRES_DB: spotter
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
 
-#  redis_cache:
-#    image: redis:7-alpine
-#    restart: always
-#    ports:
-#      - "6379:6379"
-#    volumes:
-#      - redis_data:/data
-#    command: redis-server --requirepass "redis"
+  garage:
+    image: dxflrs/garage:v0.9.0
+    restart: always
+    ports:
+      - "3900:3900" # S3 API
+      - "3901:3901" # RPC
+      - "3903:3903" # Admin API
+    environment:
+      RPC_SECRET: ${GARAGE_RPC_SECRET}
+    volumes:
+      - ./garage.toml:/etc/garage.toml
+      - garage_meta:/var/lib/garage/meta
+      - garage_data:/var/lib/garage/data
+
 volumes:
   db_data:
-#  redis_data:
+  garage_meta:
+  garage_data:
