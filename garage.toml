@@ -13,7 +13,7 @@ allow_world_readable = true
 
 [s3_web]
 bind_addr = "[::]:3902"
-root_domain = ".s3-web.local"
+root_domain = ".localhost"
 
 [admin]
 api_bind_addr = "[::]:3903"
