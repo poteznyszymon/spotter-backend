@@ -25,8 +25,7 @@ public class S3Service {
     }
 
     public String uploadFile(MultipartFile file, String bucketName) {
-        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-
+        String fileName = UUID.randomUUID().toString();
         try {
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
@@ -34,9 +33,7 @@ public class S3Service {
                     .contentType(file.getContentType())
                     .build();
 
-            s3Client.putObject(putObjectRequest,
-                    RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
-
+            s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
             return fileName;
         } catch (IOException e) {
             throw new S3FileUploadException("Error while uploading file to S3");

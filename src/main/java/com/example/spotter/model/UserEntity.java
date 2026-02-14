@@ -4,6 +4,7 @@ import com.example.spotter.utils.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -38,13 +40,13 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false)
     private String lastName;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Role role = Role.EMPLOYEE;
-
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "avatar_id")
     AttachmentEntity avatar;
+
+    @ManyToMany(mappedBy = "admins", fetch = FetchType.LAZY)
+    //@ToString.Exclude // infinite loop fix
+    private Set<OfficeEntity> managedOffices;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

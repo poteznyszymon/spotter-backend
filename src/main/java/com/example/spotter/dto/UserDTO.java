@@ -11,7 +11,6 @@ public class UserDTO {
     private String username;
     private String firstName;
     private String lastName;
-    private Role role;
-    private String avatarUrl;
+    private AttachmentDTO avatar;
     private LocalDateTime createdAt;
 }

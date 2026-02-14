@@ -29,7 +29,7 @@ public class UserMapper {
             avatarUrl = String.format("%s/%s", s3Service.getPublicUrl(avatarsBucketName), user.getAvatar().getObjectKey());
         }
 
-        dto.setAvatarUrl(avatarUrl);
+        dto.getAvatar().setUrl(avatarUrl);
         return dto;
     }
 

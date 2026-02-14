@@ -1,32 +1,31 @@
 package com.example.spotter.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-@Entity
 @Data
+@MappedSuperclass
 @NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "attachments")
-@Builder
-public class AttachmentEntity {
+@SuperBuilder
+public abstract class MapElement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(nullable = false)
-    private String objectKey;
+    private String code;
 
     @Column(nullable = false)
-    private String bucketName;
+    private Double posX;
 
     @Column(nullable = false)
-    private String originalName;
+    private Double posY;
 
-    @Column(nullable = false)
-    private String contentType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "floor_id", nullable = false)
+    private FloorEntity floor;
+
 }
