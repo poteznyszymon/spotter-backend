@@ -15,10 +15,7 @@ import java.util.Optional;
 public class UserService {
 
     @Value("${app.avatars-bucket-name}")
-    private String avatarBucketName;
-
-    @Value("${app.avatars-public-url}")
-    private String publicUrl;
+    private String avatarsBucketName;
 
     private final S3Service s3Service;
     private final UserRepository userRepository;
@@ -35,19 +32,19 @@ public class UserService {
         UserEntity user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found: " + userId));
 
         if (user.getAvatar() != null) {
-            s3Service.deleteFile(user.getAvatar().getObjectKey(), avatarBucketName);
+            s3Service.deleteFile(user.getAvatar().getObjectKey(), avatarsBucketName);
         }
 
-        String objectKey = s3Service.uploadFile(file, avatarBucketName);
+        String objectKey = s3Service.uploadFile(file, avatarsBucketName);
 
         AttachmentEntity avatar = AttachmentEntity.builder()
-                .bucketName(avatarBucketName)
+                .bucketName(avatarsBucketName)
                 .objectKey(objectKey)
                 .build();
 
         user.setAvatar(avatar);
         userRepository.save(user);
-        return String.format("%s/%s", publicUrl, objectKey);
+        return String.format("%s/%s", s3Service.getPublicUrl(avatarsBucketName), objectKey);
     }
 
     private void validateFile(MultipartFile file) {

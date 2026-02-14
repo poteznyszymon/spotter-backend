@@ -15,6 +15,8 @@ import java.util.UUID;
 @Service
 public class S3Service {
 
+    @Value("${app.s3-public-url}")
+    private String publicUrl;
 
     private final S3Client s3Client;
 
@@ -52,6 +54,13 @@ public class S3Service {
         } catch (Exception e) {
             /// TODO add logs here
         }
+    }
+
+    public String getPublicUrl(String bucketName) {
+        if (bucketName == null || !publicUrl.contains("{bucket}")) {
+            throw new RuntimeException("Error while getting bucket public url");
+        }
+        return publicUrl.replace("{bucket}", bucketName);
     }
 
 }
