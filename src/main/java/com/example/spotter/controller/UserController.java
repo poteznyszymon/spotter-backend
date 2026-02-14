@@ -25,8 +25,7 @@ public class UserController {
             @RequestParam MultipartFile file,
             @AuthenticationPrincipal UserEntity userEntity
     ) {
-        String url =  userService.updateAvatar(userEntity.getId(), file);
-        return ResponseEntity.ok(url);
+        return ResponseEntity.ok(userService.updateAvatar(userEntity.getId(), file));
     }
 
 }

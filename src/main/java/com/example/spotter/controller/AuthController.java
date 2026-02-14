@@ -4,6 +4,7 @@ import com.example.spotter.dto.UserDTO;
 import com.example.spotter.dto.auth.AuthResponseDTO;
 import com.example.spotter.dto.auth.LoginUserDTO;
 import com.example.spotter.dto.auth.RegisterUserDTO;
+import com.example.spotter.mapper.UserMapper;
 import com.example.spotter.model.UserEntity;
 import com.example.spotter.service.AuthService;
 import com.example.spotter.utils.enums.ModelConverter;
@@ -17,11 +18,11 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
-    private final ModelConverter modelConverter;
-
-    public AuthController(AuthService authService, ModelConverter modelConverter) {
+    private final UserMapper userMapper;
+    
+    public AuthController(AuthService authService, UserMapper userMapper) {
         this.authService = authService;
-        this.modelConverter = modelConverter;
+        this.userMapper = userMapper;
     }
 
     @PostMapping("/login")
@@ -42,6 +43,6 @@ public class AuthController {
 
     @GetMapping("/user")
     public ResponseEntity<UserDTO> returnAuthenticatedUser(@AuthenticationPrincipal UserEntity user) {
-        return ResponseEntity.ok(modelConverter.convert(user, UserDTO.class));
+        return ResponseEntity.ok(userMapper.toResponse(user));
     }
 }
