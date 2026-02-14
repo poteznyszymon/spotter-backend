@@ -7,26 +7,37 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Data
-@NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "attachments")
+@NoArgsConstructor
 @Builder
-public class AttachmentEntity {
+@Data
+@Table(name = "addresses")
+public class AddressEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(nullable = false)
-    private String objectKey;
+    private String country;
 
     @Column(nullable = false)
-    private String bucketName;
+    private String city;
+
+    private String state;
 
     @Column(nullable = false)
-    private String originalName;
+    private String street;
 
     @Column(nullable = false)
-    private String contentType;
+    private String houseNumber;
+
+    private String apartmentNumber;
+
+    @Column(nullable = false)
+    private String postalCode;
+
+    private Double latitude;
+    private Double longitude;
+
 }

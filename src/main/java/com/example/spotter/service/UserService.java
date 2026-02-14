@@ -40,6 +40,8 @@ public class UserService {
         AttachmentEntity avatar = AttachmentEntity.builder()
                 .bucketName(avatarsBucketName)
                 .objectKey(objectKey)
+                .originalName(file.getOriginalFilename())
+                .contentType(file.getContentType())
                 .build();
 
         user.setAvatar(avatar);
