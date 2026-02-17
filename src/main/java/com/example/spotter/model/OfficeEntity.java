@@ -28,13 +28,8 @@ public class OfficeEntity {
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private AddressEntity address;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "office_admins",
-            joinColumns = @JoinColumn(name = "office_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private Set<UserEntity> admins;
+    @OneToMany(mappedBy = "office", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    List<UserEntity> users;
 
     @OneToMany(mappedBy = "office", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<FloorEntity> floors;

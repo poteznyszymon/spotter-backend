@@ -44,9 +44,9 @@ public class UserEntity implements UserDetails {
     @JoinColumn(name = "avatar_id")
     AttachmentEntity avatar;
 
-    @ManyToMany(mappedBy = "admins", fetch = FetchType.LAZY)
-    //@ToString.Exclude // infinite loop fix
-    private Set<OfficeEntity> managedOffices;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "office_id")
+    OfficeEntity office;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
