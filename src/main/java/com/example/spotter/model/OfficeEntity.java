@@ -22,13 +22,14 @@ public class OfficeEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    @Builder.Default
+    private String name = "My office";
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private AddressEntity address;
 
-    @OneToMany(mappedBy = "office", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "office", cascade = CascadeType.ALL, orphanRemoval = true)
     List<UserEntity> users;
 
     @OneToMany(mappedBy = "office", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

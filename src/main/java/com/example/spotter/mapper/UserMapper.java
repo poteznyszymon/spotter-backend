@@ -24,12 +24,10 @@ public class UserMapper {
     public UserDTO toResponse(UserEntity user) {
         String avatarUrl = null;
         UserDTO dto = modelConverter.convert(user, UserDTO.class);
-
         if (user.getAvatar() != null) {
             avatarUrl = String.format("%s/%s", s3Service.getPublicUrl(avatarsBucketName), user.getAvatar().getObjectKey());
+            dto.getAvatar().setUrl(avatarUrl);
         }
-
-        dto.getAvatar().setUrl(avatarUrl);
         return dto;
     }
 

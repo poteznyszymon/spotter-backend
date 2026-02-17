@@ -1,10 +1,9 @@
 package com.example.spotter.dto.auth;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-public class RegisterUserDTO {
+public class RegisterAdminDTO {
 
     private String email;
     private String firstName;
