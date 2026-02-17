@@ -2,9 +2,10 @@ package com.example.spotter.model;
 
 import com.example.spotter.utils.enums.Role;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,12 +14,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "users")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserEntity implements UserDetails {
 
     @Id
@@ -42,26 +44,38 @@ public class UserEntity implements UserDetails {
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "avatar_id")
-    AttachmentEntity avatar;
+    private AttachmentEntity avatar;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "office_id")
-    OfficeEntity office;
+    private OfficeEntity office;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Role role = Role.EMPLOYEE;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean passwordChangeRequired = false;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
+    @Builder.Default
     private boolean accountNonExpired = true;
 
     @Column(nullable = false)
+    @Builder.Default
     private boolean accountNonLocked = true;
 
     @Column(nullable = false)
+    @Builder.Default
     private boolean credentialsNonExpired = true;
 
     @Column(nullable = false)
+    @Builder.Default
     private boolean enabled = true;
 
     @Override

@@ -1,0 +1,31 @@
+package com.example.spotter.service;
+
+import com.example.spotter.event.AdminRegisteredEvent;
+import com.example.spotter.model.OfficeEntity;
+import com.example.spotter.repository.OfficeRepository;
+import com.example.spotter.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Service;
+
+@Service
+public class OfficeService {
+
+    private final OfficeRepository officeRepository;
+    private final UserRepository userRepository;
+    private final Logger logger = LoggerFactory.getLogger(OfficeService.class);
+
+    public OfficeService(OfficeRepository officeRepository, UserRepository userRepository) {
+        this.officeRepository = officeRepository;
+        this.userRepository = userRepository;
+    }
+
+    @EventListener
+    public void createOffice(AdminRegisteredEvent event) {
+        OfficeEntity office = OfficeEntity.builder().build();
+        OfficeEntity savedOffice = officeRepository.save(office);
+        event.getAdmin().setOffice(savedOffice);
+        userRepository.save(event.getAdmin());
+    }
+}
