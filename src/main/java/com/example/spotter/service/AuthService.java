@@ -81,7 +81,6 @@ public class AuthService {
                 .build();
 
         UserEntity savedUser = userRepository.save(user);
-
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtService.generateToken(savedUser);

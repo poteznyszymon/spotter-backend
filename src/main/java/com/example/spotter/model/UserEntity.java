@@ -33,7 +33,7 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false)
     private String username;
 
-    @Column(nullable = false)
+    @Column
     private String password;
 
     @Column(nullable = false)
@@ -42,11 +42,11 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false)
     private String lastName;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "avatar_id")
     private AttachmentEntity avatar;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "office_id")
     private OfficeEntity office;
 
@@ -54,9 +54,9 @@ public class UserEntity implements UserDetails {
     @Builder.Default
     private Role role = Role.EMPLOYEE;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private boolean passwordChangeRequired = false;
+//    @Column(nullable = false)
+//    @Builder.Default
+//    private boolean passwordChangeRequired = false;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

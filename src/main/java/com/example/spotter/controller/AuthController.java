@@ -7,6 +7,8 @@ import com.example.spotter.dto.auth.RegisterAdminDTO;
 import com.example.spotter.mapper.UserMapper;
 import com.example.spotter.model.UserEntity;
 import com.example.spotter.service.AuthService;
+import com.example.spotter.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +19,11 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
-    private final UserMapper userMapper;
-    
-    public AuthController(AuthService authService, UserMapper userMapper) {
+    private final UserService userService;
+
+    public AuthController(AuthService authService, UserService userService) {
         this.authService = authService;
-        this.userMapper = userMapper;
+        this.userService = userService;
     }
 
     @PostMapping("/login")
@@ -31,7 +33,7 @@ public class AuthController {
 
     @PostMapping("/register-admin")
     public ResponseEntity<AuthResponseDTO> register(@RequestBody RegisterAdminDTO dto) {
-        return ResponseEntity.ok(this.authService.registerAdmin(dto));
+        return new ResponseEntity<>(this.authService.registerAdmin(dto), HttpStatus.CREATED);
     }
 
     @PostMapping("/logout")
@@ -42,6 +44,6 @@ public class AuthController {
 
     @GetMapping("/user")
     public ResponseEntity<UserDTO> returnAuthenticatedUser(@AuthenticationPrincipal UserEntity user) {
-        return ResponseEntity.ok(userMapper.toResponse(user));
+        return ResponseEntity.ok(userService.getUser(user.getId()));
     }
 }
