@@ -4,7 +4,6 @@ import com.example.spotter.dto.UserDTO;
 import com.example.spotter.dto.auth.AuthResponseDTO;
 import com.example.spotter.dto.auth.LoginUserDTO;
 import com.example.spotter.dto.auth.RegisterAdminDTO;
-import com.example.spotter.mapper.UserMapper;
 import com.example.spotter.model.UserEntity;
 import com.example.spotter.service.AuthService;
 import com.example.spotter.service.UserService;

@@ -3,7 +3,6 @@ package com.example.spotter.controller;
 import com.example.spotter.model.UserEntity;
 import com.example.spotter.service.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
