@@ -6,7 +6,7 @@ import com.example.spotter.model.OfficeEntity;
 import com.example.spotter.model.UserEntity;
 import com.example.spotter.repository.OfficeRepository;
 import com.example.spotter.repository.UserRepository;
-import com.example.spotter.utils.enums.ModelConverter;
+import com.example.spotter.utils.ModelConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;

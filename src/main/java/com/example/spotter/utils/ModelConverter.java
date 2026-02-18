@@ -1,4 +1,4 @@
-package com.example.spotter.utils.enums;
+package com.example.spotter.utils;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;

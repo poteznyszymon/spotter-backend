@@ -22,15 +22,18 @@ public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationProvider authenticationProvider;
     private final ApplicationAuthenticationEntryPoint applicationAuthenticationEntryPoint;
+    private final ApplicationAccessDeniedHandler applicationAccessDeniedHandler;
 
     public SecurityConfiguration(
             JwtAuthenticationFilter jwtAuthenticationFilter,
             AuthenticationProvider authenticationProvider,
-            ApplicationAuthenticationEntryPoint applicationAuthenticationEntryPoint
+            ApplicationAuthenticationEntryPoint applicationAuthenticationEntryPoint,
+            ApplicationAccessDeniedHandler applicationAccessDeniedHandler
     ) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.authenticationProvider = authenticationProvider;
-        this.applicationAuthenticationEntryPoint = applicationAuthenticationEntryPoint;
+        this.applicationAuthenticationEntryPoint = applicationAuthenticationEntryPointMANAGER;
+        this.applicationAccessDeniedHandler = applicationAccessDeniedHandler;
     }
 
     @Bean
@@ -40,10 +43,14 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login", "/api/auth/register-admin", "/api/auth/logout").permitAll()
+                        .requestMatchers("/api/user/invite").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(applicationAuthenticationEntryPoint))
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(applicationAuthenticationEntryPoint)
+                        .accessDeniedHandler(applicationAccessDeniedHandler)
+                )
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

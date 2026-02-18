@@ -62,6 +62,8 @@ public class UserService {
         return String.format("%s/%s", s3Service.getPublicUrl(avatarsBucketName), objectKey);
     }
 
+//        public addUsersToOffice()
+
     private void validateFile(MultipartFile file) {
         if (file == null || file.isEmpty()) throw new IllegalArgumentException("File cannot be empty");
     }
