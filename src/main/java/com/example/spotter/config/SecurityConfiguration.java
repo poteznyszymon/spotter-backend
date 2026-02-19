@@ -32,7 +32,7 @@ public class SecurityConfiguration {
     ) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.authenticationProvider = authenticationProvider;
-        this.applicationAuthenticationEntryPoint = applicationAuthenticationEntryPointMANAGER;
+        this.applicationAuthenticationEntryPoint = applicationAuthenticationEntryPoint;
         this.applicationAccessDeniedHandler = applicationAccessDeniedHandler;
     }
 

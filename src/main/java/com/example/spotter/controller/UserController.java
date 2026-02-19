@@ -20,15 +20,13 @@ public class UserController {
     }
 
     @PatchMapping("/avatar")
-    public ResponseEntity<String> updateAvatar(
-            @RequestParam MultipartFile file,
-            @AuthenticationPrincipal UserEntity userEntity
-    ) {
+    public ResponseEntity<String> updateAvatar(@RequestParam MultipartFile file, @AuthenticationPrincipal UserEntity userEntity) {
         return ResponseEntity.ok(userService.updateAvatar(userEntity.getId(), file));
     }
 
     @PostMapping("/invite")
-    public ResponseEntity<Void> inviteUsers(@RequestBody List<String> emails) {
+    public ResponseEntity<Void> inviteUsers(@RequestBody List<String> emails, @AuthenticationPrincipal UserEntity user) {
+        userService.inviteEmployees(user.getId(), emails);
         return ResponseEntity.ok().build();
     }
 
