@@ -65,7 +65,7 @@ public class AuthService {
     }
 
     public AuthResponseDTO login(LoginUserDTO dto) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserEntity user = (UserEntity) authentication.getPrincipal();
         String token = jwtService.generateToken(user);
@@ -80,13 +80,8 @@ public class AuthService {
             throw new UserAlreadyExistsException("Email already taken");
         }
 
-        if (userRepository.existsUserEntityByUsername(dto.getUsername())) {
-            throw new UserAlreadyExistsException("Username already taken");
-        }
-
         UserEntity user = UserEntity.builder()
                 .email(dto.getEmail())
-                .username(dto.getUsername())
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())
                 .password(passwordEncoder.encode(dto.getPassword()))
@@ -94,7 +89,7 @@ public class AuthService {
                 .build();
 
         UserEntity savedUser = userRepository.save(user);
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtService.generateToken(savedUser);
         setTokenToCookie(token);
@@ -122,11 +117,7 @@ public class AuthService {
         if (user.isEnabled()) {
             throw new IllegalStateException("User already verified");
         }
-        if (userRepository.existsUserEntityByUsername(dto.getUsername())) {
-            throw new UserAlreadyExistsException("Username already taken");
-        }
 
-        user.setUsername(dto.getUsername());
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));

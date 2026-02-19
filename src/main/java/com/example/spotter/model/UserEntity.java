@@ -32,9 +32,6 @@ public class UserEntity implements UserDetails {
     private String email;
 
     @Column
-    private String username;
-
-    @Column
     private String password;
 
     @Column
@@ -84,7 +81,8 @@ public class UserEntity implements UserDetails {
     @Override
     @NullMarked
     public String getUsername() {
-        return this.username;
+        // it's on purpose to mock email as a username for spring security
+        return this.email;
     }
 
     @Override

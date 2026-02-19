@@ -2,6 +2,7 @@ package com.example.spotter.controller;
 
 import com.example.spotter.model.UserEntity;
 import com.example.spotter.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -20,14 +21,14 @@ public class UserController {
     }
 
     @PatchMapping("/avatar")
-    public ResponseEntity<String> updateAvatar(@RequestParam MultipartFile file, @AuthenticationPrincipal UserEntity userEntity) {
-        return ResponseEntity.ok(userService.updateAvatar(userEntity.getId(), file));
+    public String updateAvatar(@RequestParam MultipartFile file, @AuthenticationPrincipal UserEntity userEntity) {
+        return userService.updateAvatar(userEntity.getId(), file);
     }
 
     @PostMapping("/invite")
-    public ResponseEntity<Void> inviteUsers(@RequestBody List<String> emails, @AuthenticationPrincipal UserEntity user) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public void inviteUsers(@RequestBody List<String> emails, @AuthenticationPrincipal UserEntity user) {
         userService.inviteEmployees(user.getId(), emails);
-        return ResponseEntity.ok().build();
     }
 
 }

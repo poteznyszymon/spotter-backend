@@ -3,7 +3,6 @@ package com.example.spotter.controller;
 import com.example.spotter.dto.UserSummaryDTO;
 import com.example.spotter.model.UserEntity;
 import com.example.spotter.service.OfficeService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,8 +21,8 @@ public class OfficeController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<UserSummaryDTO>> getUsers(@AuthenticationPrincipal UserEntity user) {
-        return ResponseEntity.ok(officeService.getUsers(user));
+    public List<UserSummaryDTO> getUsers(@AuthenticationPrincipal UserEntity user) {
+        return officeService.getUsers(user);
     }
 
 }

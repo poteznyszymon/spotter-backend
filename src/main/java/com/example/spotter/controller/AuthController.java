@@ -9,7 +9,6 @@ import com.example.spotter.model.UserEntity;
 import com.example.spotter.service.AuthService;
 import com.example.spotter.service.UserService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,29 +26,30 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginUserDTO dto) {
-        return ResponseEntity.ok(this.authService.login(dto));
+    public AuthResponseDTO login(@RequestBody LoginUserDTO dto) {
+        return authService.login(dto);
     }
 
     @PostMapping("/register-admin")
-    public ResponseEntity<AuthResponseDTO> register(@RequestBody RegisterAdminDTO dto) {
-        return new ResponseEntity<>(this.authService.registerAdmin(dto), HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public AuthResponseDTO register(@RequestBody RegisterAdminDTO dto) {
+        return authService.registerAdmin(dto);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout() {
-        this.authService.logout();
-        return ResponseEntity.ok().body(null);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logout() {
+        authService.logout();
     }
 
     @GetMapping("/user")
-    public ResponseEntity<UserDTO> returnAuthenticatedUser(@AuthenticationPrincipal UserEntity user) {
-        return ResponseEntity.ok(userService.getUser(user.getId()));
+    public UserDTO returnAuthenticatedUser(@AuthenticationPrincipal UserEntity user) {
+        return userService.getUser(user.getId());
     }
 
     @PostMapping("/activate-user")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void activateUser(@RequestBody VerifyUserDTO dto) {
-        this.authService.activateUser(dto);
+        authService.activateUser(dto);
     }
 }
