@@ -31,7 +31,7 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column()
+    @Column
     private String username;
 
     @Column
@@ -54,10 +54,6 @@ public class UserEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private Role role = Role.EMPLOYEE;
-
-//    @Column(nullable = false)
-//    @Builder.Default
-//    private boolean passwordChangeRequired = false;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

@@ -45,4 +45,9 @@ public class AuthController {
     public ResponseEntity<UserDTO> returnAuthenticatedUser(@AuthenticationPrincipal UserEntity user) {
         return ResponseEntity.ok(userService.getUser(user.getId()));
     }
+
+    @PostMapping("/verify")
+    public ResponseEntity<Void> verifyUser() {
+        return ResponseEntity.ok().body(null);
+    }
 }
