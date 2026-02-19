@@ -3,10 +3,15 @@ package com.example.spotter.service;
 import com.example.spotter.dto.auth.AuthResponseDTO;
 import com.example.spotter.dto.auth.LoginUserDTO;
 import com.example.spotter.dto.auth.RegisterAdminDTO;
+import com.example.spotter.dto.auth.VerifyUserDTO;
 import com.example.spotter.event.AdminRegisteredEvent;
+import com.example.spotter.exception.exceptions.EntityNotFoundException;
 import com.example.spotter.exception.exceptions.UserAlreadyExistsException;
+import com.example.spotter.exception.exceptions.UserNotFoundException;
 import com.example.spotter.model.UserEntity;
+import com.example.spotter.model.VerificationTokenEntity;
 import com.example.spotter.repository.UserRepository;
+import com.example.spotter.repository.VerificationTokenRepository;
 import com.example.spotter.utils.enums.Role;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,6 +25,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 public class AuthService {
 
@@ -32,6 +39,8 @@ public class AuthService {
     private final HttpServletResponse response;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher eventPublisher;
+    private final VerificationTokenRepository verificationTokenRepository;
+    private final OfficeService officeService;
 
     private final int cookieMaxAge =  24 * 60 * 60; // 1 day
 
@@ -41,7 +50,9 @@ public class AuthService {
             AuthenticationManager authenticationManager,
             HttpServletResponse response,
             PasswordEncoder passwordEncoder,
-            ApplicationEventPublisher eventPublisher
+            ApplicationEventPublisher eventPublisher,
+            VerificationTokenRepository verificationTokenRepository,
+            OfficeService officeService
     ) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
@@ -49,6 +60,8 @@ public class AuthService {
         this.response = response;
         this.passwordEncoder = passwordEncoder;
         this.eventPublisher = eventPublisher;
+        this.verificationTokenRepository = verificationTokenRepository;
+        this.officeService = officeService;
     }
 
     public AuthResponseDTO login(LoginUserDTO dto) {
@@ -85,12 +98,41 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtService.generateToken(savedUser);
         setTokenToCookie(token);
-        eventPublisher.publishEvent(new AdminRegisteredEvent(savedUser));
+        officeService.createOffice(savedUser);
         return new AuthResponseDTO(token, jwtService.getExpirationTime());
     }
 
     public void logout() {
         clearTokenCookie();
+    }
+
+    @Transactional
+    public void activateUser(VerifyUserDTO dto) {
+        VerificationTokenEntity tokenEntity = verificationTokenRepository
+                .findByToken(dto.getToken())
+                .orElseThrow(() -> new IllegalStateException("Invalid token"));
+
+        if (tokenEntity.isExpired()) {
+            throw new IllegalStateException("Token expired");
+        }
+
+        UserEntity user = Optional.ofNullable(tokenEntity.getUser())
+                .orElseThrow(() -> new UserNotFoundException("User assigned to the token not found"));
+
+        if (user.isEnabled()) {
+            throw new IllegalStateException("User already verified");
+        }
+        if (userRepository.existsUserEntityByUsername(dto.getUsername())) {
+            throw new UserAlreadyExistsException("Username already taken");
+        }
+
+        user.setUsername(dto.getUsername());
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setEnabled(true);
+
+        verificationTokenRepository.delete(tokenEntity);
     }
 
     private void setTokenToCookie(String token) {
@@ -108,5 +150,4 @@ public class AuthService {
         cookie.setMaxAge(0);
         response.addCookie(cookie);
     }
-
 }

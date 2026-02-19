@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class VerifyUserDTO {
 
+    private String token;
     private String username;
     private String firstName;
     private String lastName;
