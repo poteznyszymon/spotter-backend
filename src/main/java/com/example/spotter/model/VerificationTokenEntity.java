@@ -33,5 +33,9 @@ public class VerificationTokenEntity {
 
     @Enumerated(EnumType.STRING)
     private TokenType tokenType;
+
+    public boolean isExpired() {
+        return this.expiryDate.isBefore(LocalDateTime.now());
+    }
 }
 

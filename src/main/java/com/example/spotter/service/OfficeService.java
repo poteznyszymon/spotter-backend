@@ -32,12 +32,11 @@ public class OfficeService {
         this.modelConverter = modelConverter;
     }
 
-    @EventListener
-    public void createOffice(AdminRegisteredEvent event) {
+    public void createOffice(UserEntity savedAdmin) {
         OfficeEntity office = OfficeEntity.builder().build();
         OfficeEntity savedOffice = officeRepository.save(office);
-        event.getAdmin().setOffice(savedOffice);
-        userRepository.save(event.getAdmin());
+        savedAdmin.setOffice(savedOffice);
+        userRepository.save(savedAdmin);
     }
 
     public List<UserSummaryDTO> getUsers(UserEntity user) {

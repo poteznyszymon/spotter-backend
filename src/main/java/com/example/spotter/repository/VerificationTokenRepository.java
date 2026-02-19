@@ -6,9 +6,13 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface VerificationTokenRepository extends JpaRepository<VerificationTokenEntity, Long> {
     @Modifying
     @Query("DELETE FROM VerificationTokenEntity t WHERE t.expiryDate < CURRENT_TIMESTAMP ")
     int deleteExpiredTokens(); // returns number of deleted tokens
+
+    Optional<VerificationTokenEntity> findByToken(String token);
 }

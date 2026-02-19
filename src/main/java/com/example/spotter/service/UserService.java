@@ -28,11 +28,11 @@ public class UserService {
     private final UserMapper userMapper;
     private final VerificationTokenService verificationTokenService;
 
-
     public UserService(
             S3Service s3Service,
             UserRepository userRepository,
-            UserMapper userMapper, VerificationTokenService verificationTokenService
+            UserMapper userMapper,
+            VerificationTokenService verificationTokenService
     ) {
         this.s3Service = s3Service;
         this.userRepository = userRepository;

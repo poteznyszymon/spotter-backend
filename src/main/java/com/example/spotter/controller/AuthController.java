@@ -4,6 +4,7 @@ import com.example.spotter.dto.UserDTO;
 import com.example.spotter.dto.auth.AuthResponseDTO;
 import com.example.spotter.dto.auth.LoginUserDTO;
 import com.example.spotter.dto.auth.RegisterAdminDTO;
+import com.example.spotter.dto.auth.VerifyUserDTO;
 import com.example.spotter.model.UserEntity;
 import com.example.spotter.service.AuthService;
 import com.example.spotter.service.UserService;
@@ -46,8 +47,9 @@ public class AuthController {
         return ResponseEntity.ok(userService.getUser(user.getId()));
     }
 
-    @PostMapping("/verify")
-    public ResponseEntity<Void> verifyUser() {
-        return ResponseEntity.ok().body(null);
+    @PostMapping("/activate-user")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void activateUser(@RequestBody VerifyUserDTO dto) {
+        this.authService.activateUser(dto);
     }
 }
