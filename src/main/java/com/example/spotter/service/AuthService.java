@@ -1,10 +1,13 @@
 package com.example.spotter.service;
 
+import com.example.spotter.dto.VerifyTokenResponseDTO;
 import com.example.spotter.dto.auth.AuthResponseDTO;
 import com.example.spotter.dto.auth.LoginUserDTO;
 import com.example.spotter.dto.auth.RegisterAdminDTO;
 import com.example.spotter.dto.auth.VerifyUserDTO;
 import com.example.spotter.event.AdminRegisteredEvent;
+import com.example.spotter.event.UserInvitation;
+import com.example.spotter.event.UsersInvitedEvent;
 import com.example.spotter.exception.exceptions.EntityNotFoundException;
 import com.example.spotter.exception.exceptions.UserAlreadyExistsException;
 import com.example.spotter.exception.exceptions.UserNotFoundException;
@@ -13,6 +16,7 @@ import com.example.spotter.model.VerificationTokenEntity;
 import com.example.spotter.repository.UserRepository;
 import com.example.spotter.repository.VerificationTokenRepository;
 import com.example.spotter.utils.enums.Role;
+import com.example.spotter.utils.enums.TokenType;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +29,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -41,6 +46,8 @@ public class AuthService {
     private final ApplicationEventPublisher eventPublisher;
     private final VerificationTokenRepository verificationTokenRepository;
     private final OfficeService officeService;
+    private final VerificationTokenService verificationTokenService;
+    private final UserService userService;
 
     private final int cookieMaxAge =  24 * 60 * 60; // 1 day
 
@@ -52,8 +59,8 @@ public class AuthService {
             PasswordEncoder passwordEncoder,
             ApplicationEventPublisher eventPublisher,
             VerificationTokenRepository verificationTokenRepository,
-            OfficeService officeService
-    ) {
+            OfficeService officeService,
+            VerificationTokenService verificationTokenService, UserService userService) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
@@ -62,6 +69,8 @@ public class AuthService {
         this.eventPublisher = eventPublisher;
         this.verificationTokenRepository = verificationTokenRepository;
         this.officeService = officeService;
+        this.verificationTokenService = verificationTokenService;
+        this.userService = userService;
     }
 
     public AuthResponseDTO login(LoginUserDTO dto) {
@@ -103,27 +112,22 @@ public class AuthService {
 
     @Transactional
     public void activateUser(VerifyUserDTO dto) {
-        VerificationTokenEntity tokenEntity = verificationTokenRepository
-                .findByToken(dto.getToken())
-                .orElseThrow(() -> new IllegalStateException("Invalid token"));
-
-        if (tokenEntity.isExpired()) {
-            throw new IllegalStateException("Token expired");
-        }
-
-        UserEntity user = Optional.ofNullable(tokenEntity.getUser())
-                .orElseThrow(() -> new UserNotFoundException("User assigned to the token not found"));
-
-        if (user.isEnabled()) {
-            throw new IllegalStateException("User already verified");
-        }
-
+        VerifyTokenResponseDTO response = verificationTokenService.verifyToken(dto.getToken());
+        UserEntity user = response.getUserEntity();
+        VerificationTokenEntity token = response.getTokenEntity();
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setEnabled(true);
+        verificationTokenRepository.delete(token);
+    }
 
-        verificationTokenRepository.delete(tokenEntity);
+    @Transactional
+    public void resendActivationToken(Long userId) {
+        UserEntity user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User with ID: " + userId + " not found"));
+        verificationTokenService.deleteUserTokens(user.getId(), TokenType.ACTIVATION);
+        List<UserInvitation> payload = verificationTokenService.createTokens(List.of(user), TokenType.ACTIVATION);
+        eventPublisher.publishEvent(new UsersInvitedEvent(payload));
     }
 
     private void setTokenToCookie(String token) {

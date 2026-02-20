@@ -42,8 +42,13 @@ public class SecurityConfiguration {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/login", "/api/auth/register-admin", "/api/auth/logout", "/api/auth/verify-user").permitAll()
-                        .requestMatchers("/api/user/invite").hasRole("ADMIN")
+                        .requestMatchers("/api/auth/login",
+                                "/api/auth/register-admin",
+                                "/api/auth/logout",
+                                "/api/auth/verify-user",
+                                "/api/auth/verify-token"
+                        ).permitAll()
+                        .requestMatchers("/api/user/invite", "/api/auth/resend-verification-token").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

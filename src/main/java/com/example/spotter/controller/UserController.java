@@ -28,7 +28,7 @@ public class UserController {
     @PostMapping("/invite")
     @ResponseStatus(HttpStatus.CREATED)
     public void inviteUsers(@RequestBody List<String> emails, @AuthenticationPrincipal UserEntity user) {
-        userService.inviteEmployees(user.getId(), emails);
+        userService.inviteEmployeesAndNotify(user.getId(), emails);
     }
 
 }

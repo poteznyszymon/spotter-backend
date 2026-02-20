@@ -1,14 +1,18 @@
 package com.example.spotter.service;
 
 import com.example.spotter.dto.UserDTO;
+import com.example.spotter.event.UserInvitation;
+import com.example.spotter.event.UsersInvitedEvent;
 import com.example.spotter.exception.exceptions.UserNotFoundException;
 import com.example.spotter.mapper.UserMapper;
 import com.example.spotter.model.AttachmentEntity;
 import com.example.spotter.model.UserEntity;
 import com.example.spotter.repository.UserRepository;
 import com.example.spotter.utils.enums.Role;
+import com.example.spotter.utils.enums.TokenType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,17 +31,20 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final VerificationTokenService verificationTokenService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public UserService(
             S3Service s3Service,
             UserRepository userRepository,
             UserMapper userMapper,
-            VerificationTokenService verificationTokenService
+            VerificationTokenService verificationTokenService,
+            ApplicationEventPublisher eventPublisher
     ) {
         this.s3Service = s3Service;
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.verificationTokenService = verificationTokenService;
+        this.eventPublisher = eventPublisher;
     }
 
     public UserDTO getUser(Long userId) {
@@ -73,7 +80,7 @@ public class UserService {
     }
 
     @Transactional
-    public void inviteEmployees(Long adminId, List<String> emails) {
+    public void inviteEmployeesAndNotify(Long adminId, List<String> emails) {
 
         UserEntity admin = userRepository
                 .findById(adminId)
@@ -98,7 +105,8 @@ public class UserService {
                 .toList();
 
         List<UserEntity> savedUsers = userRepository.saveAll(usersToSave);
-        verificationTokenService.createTokensAndNotify(savedUsers);
+        List<UserInvitation> payload = verificationTokenService.createTokens(savedUsers, TokenType.ACTIVATION);
+        eventPublisher.publishEvent(new UsersInvitedEvent(payload));
     }
 
     private void validateFile(MultipartFile file) {

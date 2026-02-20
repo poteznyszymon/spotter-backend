@@ -30,7 +30,7 @@ public class OfficeEntity {
     private AddressEntity address;
 
     @OneToMany(mappedBy = "office", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    List<UserEntity> users;
+    private List<UserEntity> users;
 
     @OneToMany(mappedBy = "office", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<FloorEntity> floors;

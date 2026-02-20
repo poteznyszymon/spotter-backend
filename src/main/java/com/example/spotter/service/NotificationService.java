@@ -23,7 +23,7 @@ public class NotificationService {
     public void handleUsersInvitations(UsersInvitedEvent event) {
         for (UserInvitation invitation : event.invitations()) {
             try {
-                emailService.sendPlanText(invitation.email(), "Your invitation link", invitation.token());
+                emailService.sendPlanText(invitation.email(), "Activate your account", invitation.token());
             } catch (Exception e) {
                 log.error("Unabled to send invitation email for {}", invitation.email());
             }

@@ -17,13 +17,10 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @NullMarked
     Optional<UserEntity> findById(Long id);
     Optional<UserEntity> findByEmail(String email);
-    Optional<UserEntity> findByUsername(String username);
-
     @Query("SELECT u.email FROM UserEntity u WHERE u.email IN :emails")
     List<String> findExistingEmails(@Param("emails") List<String> emails);
 
     List<UserEntity> findAllByOffice_Id(Long id);
 
     boolean existsUserEntityByEmail(String email);
-    boolean existsUserEntityByUsername(String username);
 }
