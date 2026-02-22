@@ -5,10 +5,8 @@ import com.example.spotter.dto.auth.AuthResponseDTO;
 import com.example.spotter.dto.auth.LoginUserDTO;
 import com.example.spotter.dto.auth.RegisterAdminDTO;
 import com.example.spotter.dto.auth.VerifyUserDTO;
-import com.example.spotter.event.AdminRegisteredEvent;
 import com.example.spotter.event.UserInvitation;
 import com.example.spotter.event.UsersInvitedEvent;
-import com.example.spotter.exception.exceptions.EntityNotFoundException;
 import com.example.spotter.exception.exceptions.UserAlreadyExistsException;
 import com.example.spotter.exception.exceptions.UserNotFoundException;
 import com.example.spotter.model.UserEntity;
@@ -30,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AuthService {
