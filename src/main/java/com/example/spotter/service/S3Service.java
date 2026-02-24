@@ -1,6 +1,6 @@
 package com.example.spotter.service;
 
-import com.example.spotter.exception.exceptions.S3FileUploadException;
+import com.example.spotter.exception.exceptions.StorageServiceException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -11,7 +11,6 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.IOException;
-import java.sql.SQLOutput;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,11 +40,11 @@ public class S3Service {
             s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
             return fileName;
         } catch (S3Exception e) {
-            throw new RuntimeException("Could not upload file from S3 (AWS Error)", e);
+            throw new StorageServiceException("Could not upload file from S3 (AWS Error)", e);
         } catch (SdkClientException e) {
-            throw new RuntimeException("Failed to upload file from S3 (Connection Error)", e);
+            throw new StorageServiceException("Failed to upload file from S3 (Connection Error)", e);
         } catch (IOException e) {
-            throw new S3FileUploadException("Error while uploading file to S3");
+            throw new StorageServiceException("Error while uploading file to S3", e);
         }
     }
 
@@ -58,9 +57,9 @@ public class S3Service {
 
             s3Client.deleteObject(deleteObjectRequest);
         } catch (S3Exception e) {
-            throw new RuntimeException("Could not delete file from S3 (AWS Error)", e);
+            throw new StorageServiceException("Could not delete file from S3 (AWS Error)", e);
         } catch (SdkClientException e) {
-            throw new RuntimeException("Failed to delete file from S3 (Connection Error)", e);
+            throw new StorageServiceException("Failed to delete file from S3 (Connection Error)", e);
         }
     }
 
@@ -71,9 +70,9 @@ public class S3Service {
                     .map(Bucket::name)
                     .toList();
         } catch (S3Exception e) {
-            throw new RuntimeException("Failed to list S3 buckets (AWS Error)", e);
+            throw new StorageServiceException("Failed to list S3 buckets (AWS Error)", e);
         } catch (SdkClientException e) {
-            throw new RuntimeException("Failed to list S3 buckets (Connection Error)", e);
+            throw new StorageServiceException("Failed to list S3 buckets (Connection Error)", e);
         }
     }
 
@@ -89,9 +88,9 @@ public class S3Service {
                     .map(S3Object::key)
                     .toList();
         } catch (S3Exception e) {
-            throw new RuntimeException("Could not list all buckets from S3 (AWS Error)", e);
+            throw new StorageServiceException("Could not list all buckets from S3 (AWS Error)", e);
         } catch (SdkClientException e) {
-            throw new RuntimeException("Failed to list all buckets from from S3 (Connection Error)", e);
+            throw new StorageServiceException("Failed to list all buckets from from S3 (Connection Error)", e);
         }
     }
 

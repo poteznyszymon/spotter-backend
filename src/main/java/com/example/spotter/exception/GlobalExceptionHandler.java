@@ -1,6 +1,6 @@
 package com.example.spotter.exception;
 
-import com.example.spotter.exception.exceptions.S3FileUploadException;
+import com.example.spotter.exception.exceptions.StorageServiceException;
 import com.example.spotter.exception.exceptions.UserAlreadyExistsException;
 import com.example.spotter.exception.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -26,8 +26,8 @@ public class GlobalExceptionHandler {
         return pd;
     }
 
-    @ExceptionHandler(S3FileUploadException.class)
-    public ProblemDetail handleS3FileUploadException(S3FileUploadException ex) {
+    @ExceptionHandler(StorageServiceException.class)
+    public ProblemDetail handleS3FileUploadException(StorageServiceException ex) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_GATEWAY, ex.getMessage());
         pd.setProperty("description", "S3 upload error");
         return pd;
