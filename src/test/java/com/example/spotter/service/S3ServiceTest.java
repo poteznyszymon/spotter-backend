@@ -3,6 +3,9 @@ package com.example.spotter.service;
 import com.example.spotter.exception.exceptions.StorageServiceException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -136,6 +139,39 @@ class S3ServiceTest {
             StorageServiceException thrownException = assertThrows(StorageServiceException.class, () -> s3Service.uploadFile(mockFile, expectedBucketName));
             assertEquals("Error while uploading file to S3", thrownException.getMessage());
         }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {" ", "   "})
+        public void uploadFileShouldThrowIllegalArgumentExceptionWhenBucketNameIsInvalid(String invalidBucketName) {
+            MockMultipartFile mockFile = new MockMultipartFile(
+                    "test-file",
+                    "test-file",
+                    "",
+                    "test content".getBytes());
+
+            IllegalArgumentException thrownException = assertThrows(IllegalArgumentException.class, () -> s3Service.uploadFile(mockFile, invalidBucketName));
+            assertEquals("File and bucket name cannot be null or empty", thrownException.getMessage());
+        }
+
+        @Test
+        public void uploadFileShouldThrowIllegalArgumentExceptionWhenFileIsNull() {
+            String validBucket = "valid-bucket";
+            IllegalArgumentException thrownException = assertThrows(IllegalArgumentException.class, () -> s3Service.uploadFile(null, validBucket));
+            assertEquals("File and bucket name cannot be null or empty", thrownException.getMessage());
+        }
+
+        @Test
+        public void uploadFileShouldThrowIllegalArgumentExceptionWhenFileIsEmpty() {
+            String validBucket = "valid-bucket";
+            MockMultipartFile mockFile = new MockMultipartFile(
+                    "test-file",
+                    "test-file",
+                    "",
+                    new byte[0]);
+            IllegalArgumentException thrownException = assertThrows(IllegalArgumentException.class, () -> s3Service.uploadFile(mockFile, validBucket));
+            assertEquals("File and bucket name cannot be null or empty", thrownException.getMessage());
+        }
     }
 
     @Nested
@@ -180,6 +216,24 @@ class S3ServiceTest {
 
             StorageServiceException thrownError = assertThrows(StorageServiceException.class, () -> s3Service.deleteFile(mockFileName, expectedBucketName));
             assertEquals("Failed to delete file from S3 (Connection Error)", thrownError.getMessage());
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {" ", "   "})
+        public void deleteFileShouldThrowIllegalArgumentExceptionWhenFileNameIsInvalid(String fileName) {
+            String validBucketName = "test-bucket";
+            IllegalArgumentException thrownException = assertThrows(IllegalArgumentException.class, () -> s3Service.deleteFile(fileName, validBucketName));
+            assertEquals("File name and bucket name cannot be null or empty", thrownException.getMessage());
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {" ", "   "})
+        public void deleteFileShouldThrowIllegalArgumentExceptionWhenBucketNameIsInvalid(String bucketName) {
+            String validFileName = "test-bucket";
+            IllegalArgumentException thrownException = assertThrows(IllegalArgumentException.class, () -> s3Service.deleteFile(validFileName, bucketName));
+            assertEquals("File name and bucket name cannot be null or empty", thrownException.getMessage());
         }
     }
 
@@ -304,6 +358,14 @@ class S3ServiceTest {
 
             StorageServiceException thrownException = assertThrows(StorageServiceException.class, () -> s3Service.listObject(testBucketName));
             assertEquals("Failed to list all buckets from from S3 (Connection Error)", thrownException.getMessage());
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {" ", "   "})
+        public void listObjectsShouldThrowIllegalArgumentExceptionWhenBucketNameIsInvalid(String bucketName) {
+            IllegalArgumentException thrownException = assertThrows(IllegalArgumentException.class, () -> s3Service.listObject(bucketName));
+            assertEquals("Bucket name cannot be null or empty", thrownException.getMessage());
         }
     }
 

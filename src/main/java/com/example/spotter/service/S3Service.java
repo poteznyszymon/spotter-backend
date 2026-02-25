@@ -27,6 +27,9 @@ public class S3Service {
     }
 
     public String uploadFile(MultipartFile file, String bucketName) {
+        if (file == null || file.isEmpty() || bucketName == null || bucketName.isBlank()) {
+            throw new IllegalArgumentException("File and bucket name cannot be null or empty");
+        }
         String randomUuid = UUID.randomUUID().toString();
         String extension = StringUtils.getFilenameExtension(file.getOriginalFilename());
         String fileName = extension != null ? randomUuid + "." + extension : randomUuid;
@@ -49,6 +52,9 @@ public class S3Service {
     }
 
     public void deleteFile(String fileName, String bucketName) {
+        if (fileName == null || fileName.isBlank() || bucketName == null || bucketName.isBlank()) {
+            throw new IllegalArgumentException("File name and bucket name cannot be null or empty");
+        }
         try {
             DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                     .bucket(bucketName)
@@ -77,6 +83,9 @@ public class S3Service {
     }
 
     public List<String> listObject(String bucketName) {
+        if (bucketName == null || bucketName.isBlank()) {
+            throw new IllegalArgumentException("Bucket name cannot be null or empty");
+        }
         try {
             ListObjectsV2Request listObjectsV2Request = ListObjectsV2Request.builder()
                     .bucket(bucketName)
