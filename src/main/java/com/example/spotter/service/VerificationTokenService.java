@@ -8,7 +8,6 @@ import com.example.spotter.model.VerificationTokenEntity;
 import com.example.spotter.repository.VerificationTokenRepository;
 import com.example.spotter.utils.enums.TokenType;
 import lombok.extern.slf4j.Slf4j;
-import org.antlr.runtime.Token;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
