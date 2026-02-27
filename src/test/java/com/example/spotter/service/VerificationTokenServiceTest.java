@@ -51,8 +51,8 @@ class VerificationTokenServiceTest {
 
             List<UserInvitation> response = service.createTokens(users, TokenType.ACTIVATION);
 
-            String token1 = response.get(0).token();
-            String token2 = response.get(1).token();
+            String token1 = response.get(0).getToken();
+            String token2 = response.get(1).getToken();
             assertNotNull(token1);
             assertNotNull(token2);
             assertNotEquals(token1, token2);
@@ -70,7 +70,7 @@ class VerificationTokenServiceTest {
             assertEquals(2, response.size());
 
             List<String> emails = response.stream()
-                    .map(UserInvitation::email)
+                    .map(UserInvitation::getEmail)
                     .toList();
 
             assertTrue(emails.contains(user1.getEmail()));

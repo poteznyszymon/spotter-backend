@@ -44,9 +44,9 @@ public class VerificationTokenServiceIntegrationTests extends AbstractIntegratio
 
             List<UserInvitation> response = verificationTokenService.createTokens(savedUsers, TokenType.ACTIVATION);
             assertEquals(2, response.size());
-            assertNotNull(response.get(0).token());
-            assertNotNull(response.get(1).token());
-            assertTrue(response.stream().anyMatch(inv -> inv.email().equals("user1@example.com") || inv.email().equals("user2@example.com")));
+            assertNotNull(response.get(0).getToken());
+            assertNotNull(response.get(1).getToken());
+            assertTrue(response.stream().anyMatch(inv -> inv.getEmail().equals("user1@example.com") || inv.getEmail().equals("user2@example.com")));
 
             List<VerificationTokenEntity> savedTokens = verificationTokenRepository.findAll();
             assertEquals(2, savedTokens.size());

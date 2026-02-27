@@ -106,7 +106,7 @@ public class UserService {
 
         List<UserEntity> savedUsers = userRepository.saveAll(usersToSave);
         List<UserInvitation> payload = verificationTokenService.createTokens(savedUsers, TokenType.ACTIVATION);
-        eventPublisher.publishEvent(new UsersInvitedEvent(payload));
+        eventPublisher.publishEvent(UsersInvitedEvent.builder().invitations(payload).build());
     }
 
     private void validateFile(MultipartFile file) {

@@ -21,11 +21,11 @@ public class NotificationService {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleUsersInvitations(UsersInvitedEvent event) {
-        for (UserInvitation invitation : event.invitations()) {
+        for (UserInvitation invitation : event.getInvitations()) {
             try {
-                emailService.sendPlanText(invitation.email(), "Activate your account", invitation.token());
+                emailService.sendPlanText(invitation.getEmail(), "Activate your account", invitation.getToken());
             } catch (Exception e) {
-                log.error("Unabled to send invitation email for {}", invitation.email());
+                log.error("Unabled to send invitation email for {}", invitation.getEmail());
             }
         }
     }

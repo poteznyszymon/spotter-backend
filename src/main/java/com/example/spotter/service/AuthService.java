@@ -124,7 +124,7 @@ public class AuthService {
         UserEntity user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User with ID: " + userId + " not found"));
         verificationTokenService.deleteUserTokens(user.getId(), TokenType.ACTIVATION);
         List<UserInvitation> payload = verificationTokenService.createTokens(List.of(user), TokenType.ACTIVATION);
-        eventPublisher.publishEvent(new UsersInvitedEvent(payload));
+        eventPublisher.publishEvent(UsersInvitedEvent.builder().invitations(payload).build());
     }
 
     private void setTokenToCookie(String token) {

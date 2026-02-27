@@ -49,7 +49,10 @@ public class VerificationTokenService {
                     .tokenType(tokenType)
                     .expiryDate(LocalDateTime.now().plusHours(tokenExpirationTimeHours))
                     .build());
-            payload.add(new UserInvitation(user.getEmail(), token));
+            payload.add(UserInvitation.builder()
+                            .email(user.getEmail())
+                            .token(token)
+                            .build());
         }
         verificationTokenRepository.saveAll(tokensToSave);
         return payload;
