@@ -48,6 +48,7 @@ public class SecurityConfiguration {
                                 "/api/auth/verify-user",
                                 "/api/auth/verify-token"
                         ).permitAll()
+                        .requestMatchers("/v3/**","/swagger-ui/**").permitAll()
                         .requestMatchers("/api/user/invite", "/api/auth/resend-verification-token").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
